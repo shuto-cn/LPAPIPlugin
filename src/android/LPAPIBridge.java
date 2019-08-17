@@ -25,38 +25,40 @@ import android.text.TextUtils;
 import android.util.Base64;
 
 public class LPAPIBridge {
-	public static final String PARAMS_NAME = "name";
-	public static final String PARAMS_X = "x";
-	public static final String PARAMS_X1 = "x1";
-	public static final String PARAMS_X2 = "x2";
-	public static final String PARAMS_Y = "y";
-	public static final String PARAMS_Y1 = "y1";
-	public static final String PARAMS_Y2 = "y2";
-	public static final String PARAMS_WIDTH = "width";
-	public static final String PARAMS_HEIGHT = "height";
-	public static final String PARAMS_ORIENTATION = "orientation";
-	public static final String PARAMS_CONTENT = "content";
-	public static final String PARAMS_TEXT = "text";
-	public static final String PARAMS_FONT_HEIGHT = "fontHeight";
-	public static final String PARAMS_FONT_STYLE = "fontStyle";
-	public static final String PARAMS_TEXT_HEIGHT = "textHeight";
-	public static final String PARAMS_LINE_WIDTH = "lineWidth";
-	public static final String PARAMS_CORNER = "corner";
-	public static final String PARAMS_CORNER_WIDTH = "cornerWidth";
-	public static final String PARAMS_CORNER_HEIGHT = "cornerHeight";
-	public static final String PARAMS_RADIUS = "radius";
-	public static final String PARAMS_DASH_COUNT = "dashCount";
-	public static final String PARAMS_DASH_LEN = "dashLen";
-	public static final String PARAMS_DASH_LEN1 = "dashLen1";
-	public static final String PARAMS_DASH_LEN2 = "dashLen2";
-	public static final String PARAMS_DASH_LEN3 = "dashLen3";
-	public static final String PARAMS_DASH_LEN4 = "dashLen4";
-	public static final String PARAMS_IMAGE = "image";
-	public static final String PARAMS_THRESHOLD = "threshold";
-	public static final String PARAMS_TYPE = "type";
-	public static final String PARAMS_ALIGNMENT = "alignment";
+	static final String PARAMS_NAME = "name";
+	static final String PARAMS_X = "x";
+	static final String PARAMS_X1 = "x1";
+	static final String PARAMS_X2 = "x2";
+	static final String PARAMS_Y = "y";
+	static final String PARAMS_Y1 = "y1";
+	static final String PARAMS_Y2 = "y2";
+	static final String PARAMS_WIDTH = "width";
+	static final String PARAMS_HEIGHT = "height";
+	static final String PARAMS_ORIENTATION = "orientation";
+	static final String PARAMS_TEXT = "text";
+	static final String PARAMS_FONT_HEIGHT = "fontHeight";
+	static final String PARAMS_FONT_STYLE = "fontStyle";
+	static final String PARAMS_TEXT_HEIGHT = "textHeight";
+	static final String PARAMS_LINE_WIDTH = "lineWidth";
+	static final String PARAMS_CORNER = "corner";
+	static final String PARAMS_CORNER_WIDTH = "cornerWidth";
+	static final String PARAMS_CORNER_HEIGHT = "cornerHeight";
+	static final String PARAMS_RADIUS = "radius";
+	static final String PARAMS_DASH_COUNT = "dashCount";
+	static final String PARAMS_DASH_LEN = "dashLen";
+	static final String PARAMS_DASH_LEN1 = "dashLen1";
+	static final String PARAMS_DASH_LEN2 = "dashLen2";
+	static final String PARAMS_DASH_LEN3 = "dashLen3";
+	static final String PARAMS_DASH_LEN4 = "dashLen4";
+	static final String PARAMS_IMAGE = "image";
+	static final String PARAMS_THRESHOLD = "threshold";
+	static final String PARAMS_TYPE = "type";
+	static final String PARAMS_ALIGNMENT = "alignment";
+	
+	static final String PARAMS_SHOWN_NAME = "shownName";
+	static final String PARAMS_MAC_ADDRESS = "macAddress";
+	static final String PARAMS_ADDRESS_TYPE = "addressType";
 
-//	public static final String PARAMS_RESULT = "result";
 	public static final String ERROR_PARAM_ERROR = "参数错误";
 
 	// 相关默认参数
@@ -78,9 +80,6 @@ public class LPAPIBridge {
 		void success(JSONObject message) {
 		};
 
-		void success(JSONArray message) {
-		};
-
 		void fail(String message) {
 		};
 	}
@@ -96,11 +95,13 @@ public class LPAPIBridge {
 				try {
 					JSONObject result = new JSONObject();
 					if (state == PrinterState.Connected || state == PrinterState.Connected2) {
-						result.put("shownName", address.shownName);
-						result.put("addressType", address.addressType);
-						result.put("macAddress", address.macAddress);
-						
+						result.put(PARAMS_SHOWN_NAME, address.shownName);
+						result.put(PARAMS_ADDRESS_TYPE, address.addressType);
+						result.put(PARAMS_MAC_ADDRESS, address.macAddress);
+
 						mOpenPrinterCallback.success(result);
+					} else if (state == PrinterState.Disconnected) {
+						mOpenPrinterCallback.fail(null);
 					}
 				} catch (JSONException e) {
 				}
@@ -127,6 +128,10 @@ public class LPAPIBridge {
 			}
 		});
 	}
+	
+	public LPAPI getApi() {
+		return this.mApi;
+	}
 
 	/**
 	 * 获取所有打印机；
@@ -144,9 +149,9 @@ public class LPAPIBridge {
 			for (PrinterAddress item : addressList) {
 				JSONObject object = new JSONObject();
 				try {
-					object.put("addressType", item.addressType);
-					object.put("shownName", item.shownName);
-					object.put("macAddress", item.macAddress);
+					object.put(PARAMS_SHOWN_NAME, item.shownName);
+					object.put(PARAMS_MAC_ADDRESS, item.macAddress);
+					object.put(PARAMS_ADDRESS_TYPE, item.addressType);
 					array.put(object);
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -159,11 +164,13 @@ public class LPAPIBridge {
 
 	public boolean openPrinter(JSONObject params, IResponse response) {
 		this.mOpenPrinterCallback = response;
-		return this.mApi.openPrinter(params.optString(PARAMS_NAME));
+		String name = (params == null ? null : params.optString(PARAMS_NAME));
+		return this.mApi.openPrinter(name);
 	}
 
 	public boolean openPrinterSync(JSONObject params) {
-		return mApi.openPrinterSync(params.optString(PARAMS_NAME));
+		String name = (params == null ? null : params.optString(PARAMS_NAME));
+		return mApi.openPrinterSync(name);
 	}
 
 	/**
@@ -171,6 +178,64 @@ public class LPAPIBridge {
 	 */
 	public String getPrinterName() {
 		return this.mApi.getPrinterName();
+	}
+	
+	/**
+	 * 获取当前打印机的MAC地址；
+	 */
+	public String getPrinterAddress() {
+		PrinterInfo info = this.mApi.getPrinterInfo();
+		return (info == null ? null : info.deviceAddress);
+	}
+
+	/**
+	 * 获取当前已连接打印机的详细信息；
+	 */
+	public JSONObject getPrinterInfo() {
+		JSONObject result = new JSONObject();
+		PrinterInfo printer = this.mApi.getPrinterInfo();
+		try {
+			if (printer != null) {
+				result.put("deviceName", printer.deviceName);
+				result.put("deviceAddress", printer.deviceAddress);
+				result.put("deviceWidth", printer.deviceWidth);
+				result.put("deviceType", printer.deviceType);
+				result.put("deviceDPI", printer.deviceDPI);
+				result.put("deviceAddrType", printer.deviceAddrType);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	/**
+	 * 获取当前打印机连接状态；
+	 */
+	public String getPrinterState() {
+		return this.mApi.getPrinterState().toString();
+	}
+
+	/**
+	 * 从配对列表中获取指定型号的第一台打印机；
+	 */
+	public JSONObject getFirstPrinter(JSONObject params) {
+		String model = (params == null ? "" : params.optString(PARAMS_NAME));
+		List<PrinterAddress> list = this.mApi.getAllPrinterAddresses(model);
+		JSONObject result = new JSONObject();
+		try {
+			if (list != null && list.size() > 0) {
+				PrinterAddress address = list.get(0);
+				result.put("shownName", address.shownName);
+				result.put("macAddress", address.macAddress);
+				result.put("addressType", address.addressType);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 
 	public boolean isPrinterOpened() {
@@ -215,11 +280,14 @@ public class LPAPIBridge {
 	}
 
 	private Bundle getPrintParams(JSONObject params) {
+		Bundle printParam = new Bundle();
+		if (params == null)
+			return printParam;
+		
 		int printDensity = params.optInt(PrintParamName.PRINT_DENSITY);
 		int printSpeed = params.optInt(PrintParamName.PRINT_SPEED);
 		int printCopys = params.optInt(PrintParamName.PRINT_COPIES);
 
-		Bundle printParam = new Bundle();
 		if (printDensity != 0)
 			printParam.putInt(PrintParamName.PRINT_DENSITY, printDensity);
 		if (printSpeed != 0)
@@ -231,6 +299,9 @@ public class LPAPIBridge {
 	}
 
 	public boolean startJob(JSONObject params) {
+		if (params == null)
+			return false;
+		
 		double width = params.optDouble(PARAMS_WIDTH);
 		double height = params.optDouble(PARAMS_HEIGHT);
 		int orientation = params.optInt(PARAMS_ORIENTATION);
@@ -243,7 +314,6 @@ public class LPAPIBridge {
 
 	public boolean commitJob(JSONObject params, IResponse response) {
 		this.mPrintCallback = response;
-
 		return this.mApi.commitJobWithParam(getPrintParams(params));
 	}
 
@@ -285,7 +355,7 @@ public class LPAPIBridge {
 		int orientation = params.optInt(PARAMS_ORIENTATION, -1);
 		if (orientation == -1)
 			return false;
-		
+
 		this.mApi.setItemOrientation(orientation);
 		return true;
 	}
@@ -301,7 +371,7 @@ public class LPAPIBridge {
 		int alignment = params.optInt(PARAMS_ALIGNMENT, -1);
 		if (alignment == -1)
 			return false;
-		
+
 		this.mApi.setItemHorizontalAlignment(alignment);
 		return true;
 	}
@@ -317,7 +387,7 @@ public class LPAPIBridge {
 		int alignment = params.optInt(PARAMS_ALIGNMENT, -1);
 		if (alignment == -1)
 			return false;
-		
+
 		this.mApi.setItemVerticalAlignment(alignment);
 		return true;
 	}
@@ -333,7 +403,7 @@ public class LPAPIBridge {
 		int penAlignment = params.optInt(PARAMS_ALIGNMENT, -1);
 		if (penAlignment == -1)
 			return false;
-		
+
 		this.mApi.setItemPenAlignment(penAlignment);
 		return true;
 	}
@@ -343,23 +413,27 @@ public class LPAPIBridge {
 	// ***************************************************
 
 	public void drawText(JSONObject params) {
-		String content = params.optString(PARAMS_CONTENT);
+		if (params == null)
+			return;
+		
+		String text = params.optString(PARAMS_TEXT);
 		double x = params.optDouble(PARAMS_X);
 		double y = params.optDouble(PARAMS_Y);
 		double width = params.optDouble(PARAMS_WIDTH);
 		double height = params.optDouble(PARAMS_HEIGHT);
 		double fontHeight = params.optDouble(PARAMS_FONT_HEIGHT);
 		int fontStyle = params.optInt(PARAMS_FONT_STYLE);
-		if (TextUtils.isEmpty(content))
+		if (TextUtils.isEmpty(text))
 			return;
 
-		this.mApi.drawTextRegular(content, x, y, width, height, fontHeight, fontStyle);
+		this.mApi.drawTextRegular(text, x, y, width, height, fontHeight, fontStyle);
 	}
 
 	public void drawRichText(JSONObject params) {
+		if (params == null)
+			return;
+		
 		String text = params.optString(PARAMS_TEXT);
-		if (TextUtils.isEmpty(text))
-			text = params.optString(PARAMS_CONTENT);
 		double x = params.optDouble(PARAMS_X);
 		double y = params.optDouble(PARAMS_Y);
 		double width = params.optDouble(PARAMS_WIDTH);
@@ -373,9 +447,10 @@ public class LPAPIBridge {
 	}
 
 	public void draw1DBarcode(JSONObject params) {
+		if (params == null)
+			return;
+		
 		String text = params.optString(PARAMS_TEXT);
-		if (TextUtils.isEmpty(text))
-			text = params.optString(PARAMS_CONTENT);
 		int type = params.optInt(PARAMS_TYPE);
 		double x = params.optDouble(PARAMS_X);
 		double y = params.optDouble(PARAMS_Y);
@@ -389,9 +464,10 @@ public class LPAPIBridge {
 	}
 
 	public void draw2DQRCode(JSONObject params) {
+		if (params == null)
+			return;
+		
 		String text = params.optString(PARAMS_TEXT);
-		if (TextUtils.isEmpty(text))
-			text = params.optString(PARAMS_CONTENT);
 		double x = params.optDouble(PARAMS_X);
 		double y = params.optDouble(PARAMS_Y);
 		double width = params.optDouble(PARAMS_WIDTH);
@@ -402,9 +478,10 @@ public class LPAPIBridge {
 	}
 
 	public void draw2DPdf417(JSONObject params) {
+		if (params == null)
+			return;
+		
 		String text = params.optString(PARAMS_TEXT);
-		if (TextUtils.isEmpty(text))
-			text = params.optString(PARAMS_CONTENT);
 		double x = params.optDouble(PARAMS_X);
 		double y = params.optDouble(PARAMS_Y);
 		double width = params.optDouble(PARAMS_WIDTH);
@@ -416,6 +493,9 @@ public class LPAPIBridge {
 	}
 
 	public void drawRectangle(JSONObject params) {
+		if (params == null)
+			return;
+		
 		double x = params.optDouble(PARAMS_X);
 		double y = params.optDouble(PARAMS_Y);
 		double width = params.optDouble(PARAMS_WIDTH);
@@ -426,6 +506,9 @@ public class LPAPIBridge {
 	}
 
 	public void fillRectangle(JSONObject params) {
+		if (params == null)
+			return;
+		
 		double x = params.optDouble(PARAMS_X);
 		double y = params.optDouble(PARAMS_Y);
 		double width = params.optDouble(PARAMS_WIDTH);
@@ -435,6 +518,9 @@ public class LPAPIBridge {
 	}
 
 	public void drawRoundRectangle(JSONObject params) {
+		if (params == null)
+			return;
+		
 		double x = params.optDouble(PARAMS_X);
 		double y = params.optDouble(PARAMS_Y);
 		double width = params.optDouble(PARAMS_WIDTH);
@@ -448,6 +534,9 @@ public class LPAPIBridge {
 	}
 
 	public void fillRoundRectangle(JSONObject params) {
+		if (params == null)
+			return;
+		
 		double x = params.optDouble(PARAMS_X);
 		double y = params.optDouble(PARAMS_Y);
 		double width = params.optDouble(PARAMS_WIDTH);
@@ -460,6 +549,9 @@ public class LPAPIBridge {
 	}
 
 	public void drawEllipse(JSONObject params) {
+		if (params == null)
+			return;
+		
 		double x = params.optDouble(PARAMS_X);
 		double y = params.optDouble(PARAMS_Y);
 		double width = params.optDouble(PARAMS_WIDTH);
@@ -470,6 +562,9 @@ public class LPAPIBridge {
 	}
 
 	public void fillEllipse(JSONObject params) {
+		if (params == null)
+			return;
+		
 		double x = params.optDouble(PARAMS_X);
 		double y = params.optDouble(PARAMS_Y);
 		double width = params.optDouble(PARAMS_WIDTH);
@@ -479,6 +574,9 @@ public class LPAPIBridge {
 	}
 
 	public void drawCircle(JSONObject params) {
+		if (params == null)
+			return;
+		
 		double x = params.optDouble(PARAMS_X);
 		double y = params.optDouble(PARAMS_Y);
 		double radius = params.optDouble(PARAMS_RADIUS);
@@ -488,6 +586,9 @@ public class LPAPIBridge {
 	}
 
 	public void fillCircle(JSONObject params) {
+		if (params == null)
+			return;
+		
 		double x = params.optDouble(PARAMS_X);
 		double y = params.optDouble(PARAMS_Y);
 		double radius = params.optDouble(PARAMS_RADIUS);
@@ -495,17 +596,23 @@ public class LPAPIBridge {
 		this.mApi.fillCircle(x, y, radius);
 	}
 
-	public boolean drawLine(JSONObject params) {
+	public void drawLine(JSONObject params) {
+		if (params == null)
+			return;
+		
 		double x1 = params.optDouble(PARAMS_X1);
 		double y1 = params.optDouble(PARAMS_Y1);
 		double x2 = params.optDouble(PARAMS_X2);
 		double y2 = params.optDouble(PARAMS_Y2);
 		double lineWidth = params.optDouble(PARAMS_LINE_WIDTH, LINEWIDTH_DEFAULT);
 
-		return this.mApi.drawLine(x1, y1, x2, y2, lineWidth);
+		this.mApi.drawLine(x1, y1, x2, y2, lineWidth);
 	}
 
 	public void drawDashLine(JSONObject params) {
+		if (params == null)
+			return;
+		
 		double x1 = params.optDouble(PARAMS_X1);
 		double y1 = params.optDouble(PARAMS_Y1);
 		double x2 = params.optDouble(PARAMS_X2);
@@ -545,6 +652,9 @@ public class LPAPIBridge {
 	}
 
 	public void drawImage(JSONObject params) {
+		if (params == null)
+			return;
+		
 		String image = params.optString(PARAMS_IMAGE);
 		double x = params.optDouble(PARAMS_X);
 		double y = params.optDouble(PARAMS_Y);

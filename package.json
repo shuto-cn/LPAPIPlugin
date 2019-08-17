@@ -1,15 +1,94 @@
 {
-  "name": "lpapiplugin",
-  "version": "0.0.1",
-  "description": "本接口提供用于操作德佟电子标签打印机的打印接口",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "_args": [
+    [
+      {
+        "raw": "cordova-plugin-lpapi",
+        "scope": null,
+        "escapedName": "cordova-plugin-lpapi",
+        "name": "cordova-plugin-lpapi",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "/Users/wux/dev/workspace/sf/inventoryApp"
+    ]
+  ],
+  "_from": "cordova-plugin-lpapi@latest",
+  "_id": "cordova-plugin-lpapi@1.0.4",
+  "_inCache": true,
+  "_location": "/cordova-plugin-lpapi",
+  "_nodeVersion": "7.3.0",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/cordova-plugin-lpapi-1.0.4.tgz_1515148409971_0.0357177194673568"
   },
+  "_npmUser": {
+    "name": "gemhu",
+    "email": "hdx_hhh@163.com"
+  },
+  "_npmVersion": "5.3.0",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "cordova-plugin-lpapi",
+    "scope": null,
+    "escapedName": "cordova-plugin-lpapi",
+    "name": "cordova-plugin-lpapi",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-lpapi/-/cordova-plugin-lpapi-1.0.4.tgz",
+  "_shasum": "7d41d96c4621e1269eba2cb5ec988e5f24b5f611",
+  "_shrinkwrap": null,
+  "_spec": "cordova-plugin-lpapi",
+  "_where": "/Users/wux/dev/workspace/sf/inventoryApp",
+  "author": {
+    "name": "DothanTech"
+  },
+  "bugs": {
+    "url": "https://github.com/GemHu/LPAPIPlugin/issues"
+  },
+  "cordova": {
+    "id": "cordova-plugin-lpapi",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "dependencies": {},
+  "description": "lpapi cordova plugin",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "integrity": "sha512-IeZdLBHM5VMMVsVoMM1fUN+3qTuS6NNfzOEYDwRXZrzBb0jLP39hb0vgzofZcafxi6Di8QPbUUy4McKBKjn7fg==",
+    "shasum": "7d41d96c4621e1269eba2cb5ec988e5f24b5f611",
+    "tarball": "https://registry.npmjs.org/cordova-plugin-lpapi/-/cordova-plugin-lpapi-1.0.4.tgz"
+  },
+  "homepage": "https://github.com/GemHu/LPAPIPlugin#readme",
+  "keywords": [
+    "lpapi",
+    "lpapi-plugin",
+    "cordova-plugin-lpapi",
+    "lpapi-ios",
+    "lpapi-android"
+  ],
+  "license": "ISC",
+  "maintainers": [
+    {
+      "name": "gemhu",
+      "email": "hdx_hhh@163.com"
+    }
+  ],
+  "name": "cordova-plugin-lpapi",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
-    "url": "http://github"
+    "url": "git+https://github.com/GemHu/LPAPIPlugin.git"
   },
-  "author": "DothanTech",
-  "license": "ISC"
+  "version": "1.0.4"
 }

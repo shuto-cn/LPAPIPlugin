@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+        <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+        <link rel="stylesheet" type="text/css" href="ionic.css">
+        <title>Hello World</title>
+
+        <script type="text/javascript">
+
+            /**
+             * 搜索打印机(获取配对列表中的打印机);
+             */
+            function scanPrinter() {
+                LPAPI.getAllPrinters("",
+                    function(msg){
+                        if (!msg) return;
+
+                        var select = document.getElementById("printerSelect");
+                        if ( typeof msg === "string"){
+                            select.innerHTML = "";
+                            var printerList = msg.split(",");
+                            for(var i = 0; i < printerList.length; i++){
+                                select.options.add(new Option(printerList[i], printerList[i]));
+                            }
+                        }
+                    });
+            }
+
+            /**
+             * 打开打印机前需要先扫描（或者获取配对列表中的打印机),否则苹果环境获取不到打印机，则无法打开打印机；
+             */
+            function openPrinter() {
+                var printerName = document.getElementById("printerSelect").value;
+                LPAPI.openPrinter(printerName,
+                    function(msg){
+                        alert("连接成功");
+                    }, function(msg){
+                        alert("连接失败");
+                    });
+            }
+
+            function closePrinter() {
+                LPAPI.closePrinter();
+            }
+
+            /**
+             * 调用以下函数前需要先成功打开打印机，否则执行下列函数的时候会无效；
+             */
+
+            function setHorizontalAlignment(){
+                var width = 70;
+                var height = 48;
+                var itemHeight = height / 3;
+                var lineWidth = 0.3;
+                var cornerWidth = 2;
+                var fontHeight = 3.5;
+
+                LPAPI.startJob(width, height, 90);
+                LPAPI.drawRectangle(0, 0, width, height, lineWidth);
+
+                LPAPI.setItemHorizontalAlignment(0);
+                LPAPI.drawRoundRectangle(0, 0, width, itemHeight, cornerWidth, cornerWidth, lineWidth);
+                LPAPI.drawText("上海道臻信息技术有限公司", 0, 0, width, itemHeight, fontHeight, 0);
+
+                LPAPI.setItemHorizontalAlignment(1);
+                LPAPI.drawRoundRectangle(0, itemHeight, width, itemHeight, cornerWidth, cornerWidth, lineWidth);
+                LPAPI.drawText("上海道臻信息技术有限公司", 0, itemHeight, width, itemHeight, fontHeight, 1);
+                LPAPI.setItemHorizontalAlignment(2);
+                LPAPI.drawRoundRectangle(0, itemHeight * 2, width, itemHeight, cornerWidth, cornerWidth, lineWidth);
+                LPAPI.drawText("上海道臻信息技术有限公司", 0, itemHeight * 2, width, itemHeight, fontHeight, 2);
+                LPAPI.commitJob();
+        	}
+
+        	function setVerticalAlignment() {
+                var width = 70;
+                var height = 48;
+                var itemHeight = height / 3;
+                var lineWidth = 0.3;
+                var cornerWidth = 2;
+                var fontHeight = 3.5;
+
+                LPAPI.startJob(width, height, 90);
+                LPAPI.drawRectangle(0, 0, width, height, lineWidth);
+
+                LPAPI.setItemVerticalAlignment(0);
+                LPAPI.drawRoundRectangle(0, 0, width, itemHeight, cornerWidth, cornerWidth, lineWidth);
+                LPAPI.drawText("上海道臻信息技术有限公司", 0, 0, width, itemHeight, fontHeight, 0);
+
+                LPAPI.setItemVerticalAlignment(1);
+                LPAPI.drawRoundRectangle(0, itemHeight, width, itemHeight, cornerWidth, cornerWidth, lineWidth);
+                LPAPI.drawText("上海道臻信息技术有限公司", 0, itemHeight, width, itemHeight, fontHeight, 0);
+                LPAPI.setItemVerticalAlignment(2);
+                LPAPI.drawRoundRectangle(0, itemHeight * 2, width, itemHeight, cornerWidth, cornerWidth, lineWidth);
+                LPAPI.drawText("上海道臻信息技术有限公司", 0, itemHeight * 2, width, itemHeight, fontHeight, 0);
+                LPAPI.commitJob();
+            }
+
+            function setOrientation() {
+                var width = 80;
+                var height = 48;
+                var itemWidth = width / 4;
+                var lineWidth = 0.3;
+                var cornerWidth = 2;
+                var fontHeight = 3.5;
+
+                LPAPI.startJob(width, height, 90);
+                LPAPI.drawRectangle(0, 0, width, height, lineWidth);
+
+                // 将打印区域用圆角矩形框分割成四个小区间；
+                LPAPI.drawRoundRectangle(itemWidth * 0, 0, itemWidth, height, cornerWidth, cornerWidth, lineWidth);
+                LPAPI.drawRoundRectangle(itemWidth * 1, 0, itemWidth, height, cornerWidth, cornerWidth, lineWidth);
+                LPAPI.drawRoundRectangle(itemWidth * 2, 0, itemWidth, height, cornerWidth, cornerWidth, lineWidth);
+                LPAPI.drawRoundRectangle(itemWidth * 3, 0, itemWidth, height, cornerWidth, cornerWidth, lineWidth);
+
+                LPAPI.setItemOrientation(0);
+                LPAPI.drawText("上海道臻信息技术有限公司", itemWidth * 0, 0, itemWidth, height, fontHeight, 0);
+                LPAPI.setItemOrientation(90);
+                LPAPI.drawText("上海道臻信息技术有限公司", itemWidth * 1, 0, itemWidth, height, fontHeight, 0);
+                LPAPI.setItemOrientation(180);
+                LPAPI.drawText("上海道臻信息技术有限公司", itemWidth * 2, 0, itemWidth, height, fontHeight, 0);
+                LPAPI.setItemOrientation(270);
+                LPAPI.drawText("上海道臻信息技术有限公司", itemWidth * 3, 0, itemWidth, height, fontHeight, 0);
+
+                LPAPI.commitJob();
+            }
+
+            function drawBorderTest() {
+                var width = 48;
+                var height = 30;
+                var lineWidth = 0.5;
+                var cornerWidth = 2;
+
+                // 矩形框
+                LPAPI.startJob(width, height, 0);
+                LPAPI.drawRectangle(0.5, 0.5, width - 1, height - 1, lineWidth);
+                LPAPI.commitJob();
+
+                // 圆角矩形
+                LPAPI.startJob(width, height, 0);
+                LPAPI.drawRoundRectangle(0.5, 0.5, width - 1, height - 1, cornerWidth, cornerWidth, lineWidth);
+                LPAPI.commitJob();
+
+                // 椭圆
+                LPAPI.startJob(width, height, 0);
+                LPAPI.drawEllipse(0, 0, width, height, lineWidth);
+                LPAPI.commitJob();
+
+                // 圆形
+                LPAPI.startJob(width, height, 0);
+                LPAPI.drawCircle(width / 2, height / 2, Math.min(width, height) / 2, lineWidth);
+				LPAPI.commitJob();
+            }
+
+            function fillTest() {
+                var width = 48;
+                var height = 30;
+                var lineWidth = 0.5;
+                var cornerWidth = 2;
+
+                // 矩形框
+                LPAPI.startJob(width, height, 0);
+                LPAPI.fillRectangle(0, 0, width, height);
+                LPAPI.commitJob();
+
+                // 圆角矩形
+                LPAPI.startJob(width, height, 0);
+                LPAPI.fillRoundRectangle(0, 0, width, height, cornerWidth, cornerWidth);
+                LPAPI.commitJob();
+
+                // 椭圆
+                LPAPI.startJob(width, height, 0);
+                LPAPI.fillEllipse(0, 0, width, height);
+                LPAPI.commitJob();
+
+                // 圆形
+                LPAPI.startJob(width, height, 0);
+                LPAPI.fillCircle(width / 2, height / 2, Math.min(width, height) / 2);
+                LPAPI.commitJob();
+            }
+
+        	/**
+             * 打印二维码
+             */
+        	function printQRCode(){
+                var width = 48;
+                var height = 48;
+                var margin = 5;
+                var text = "上海道臻";
+
+                LPAPI.startJob(width, height, 0);
+                LPAPI.drawQRCode(text, margin, margin, width - margin * 2);
+                LPAPI.commitJob();
+        	}
+
+        	function printBarcode(){
+                var width = 48;
+                var height = 30;
+                var margin = 5;
+                var text = "1234567890";
+
+                LPAPI.startJob(width, height, 0);
+                LPAPI.setItemHorizontalAlignment(1);
+                LPAPI.drawBarcode(text, margin, margin, width - margin * 2, height - margin * 2, 3);
+                LPAPI.commitJob();
+        	}
+
+        </script>
+    </head>
+    <body>
+        <h3>LPAPIPluginDemo</h3>
+        <div class="bar bar-header bar-calm">
+            <h1 class="title">LPAPIPluginDemo</h1>
+        </div>
+
+        <p><button class="button button-block button-positive" onclick="scanPrinter()">搜索打印机</button></p>
+        <p><button class="button button-block button-positive" onclick="openPrinter()">连接打印机</button></p>
+        <p><button class="button button-block button-positive" onclick="closePrinter()">断开打印机</button></p>
+        <div>
+            <label for="printerSelect">打印机列表</label>
+            <select id="printerSelect"></select>
+        </div>
+        <br>
+
+        <p><button class="button button-block button-positive" onclick="setHorizontalAlignment()">水平对齐方式测试</button></p>
+        <p><button class="button button-block button-positive" onclick="setVerticalAlignment()">垂直对齐方式测试</button></p>
+        <p><button class="button button-block button-positive" onclick="setOrientation()">旋转方向测试</button></p>
+        <p><button class="button button-block button-positive" onclick="drawBorderTest()">绘制边框测试</button></p>
+        <p><button class="button button-block button-positive" onclick="fillTest()">填充矢量图测试</button></p>
+        <p><button class="button button-block button-positive" onclick="printQRCode()">二维码测试</button></p>
+        <p><button class="button button-block button-positive" onclick="printBarcode()">一维码测试</button></p>
+        <script type="text/javascript" src="cordova.js"></script>
+    </body>
+</html>

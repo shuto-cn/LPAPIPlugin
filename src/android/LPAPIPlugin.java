@@ -13,7 +13,10 @@ public class LPAPIPlugin extends CordovaPlugin {
 
 	private static final String ACTION_GET_ALL_PRINTER = "getAllPrinters";
 	private static final String ACTION_GET_ALL_PRINTER_ADDRESS = "getAllPrinterAddresses";
+	private static final String ACTION_GET_FIRST_PRINTER = "getFirstPrinter";
 	private static final String ACTION_GET_PRINTER_NAME = "getPrinterName";
+	private static final String ACTION_GET_PRINTER_STATE = "getPrinterState";
+	private static final String ACTION_GET_PRINTER_INFO = "getPrinterInfo";
 	private static final String ACTION_IS_PRINTER_OPENED = "isPrinterOpened";
 	private static final String ACTION_OPEN_PRINTER = "openPrinter";
 	private static final String ACTION_REOPEN_PRINTER = "reopenPrinter";
@@ -35,7 +38,7 @@ public class LPAPIPlugin extends CordovaPlugin {
 	private static final String ACTION_GET_JOBPAGES = "getJobPages";
 	private static final String ACTION_PRINT_IMAGE = "printImage";
 	private static final String ACTION_CANCEL = "cancel";
-	
+
 	private static final String ACTION_DRAW_TEXT = "drawText";
 	private static final String ACTION_DRAW_RICH_TEXT = "drawRichText";
 	private static final String ACTION_DRAW_BARCODE = "draw1DBarcode";
@@ -54,22 +57,31 @@ public class LPAPIPlugin extends CordovaPlugin {
 	private static final String ACTION_DRAW_IMAGE = "drawImage";
 
 	private LPAPIBridge mApi;
-	
+
 	@Override
 	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
 		super.initialize(cordova, webView);
 		this.mApi = new LPAPIBridge();
 	}
-	
+
 	@Override
 	public boolean execute(String action, String rawArgs, final CallbackContext callbackContext) throws JSONException {
 		JSONObject params = (rawArgs == null ? new JSONObject() : new JSONObject(rawArgs));
-		
-		if (ACTION_GET_ALL_PRINTER.equalsIgnoreCase(action)) {
+
+		if (ACTION_GET_FIRST_PRINTER.equalsIgnoreCase(action)) {
+			callbackContext.success(this.mApi.getFirstPrinter(params));
+			return true;
+		} else if (ACTION_GET_ALL_PRINTER.equalsIgnoreCase(action)) {
 			callbackContext.success(this.mApi.getAllPrinters(params));
 			return true;
 		} else if (ACTION_GET_PRINTER_NAME.equalsIgnoreCase(action)) {
 			callbackContext.success(this.mApi.getPrinterName());
+			return true;
+		} else if (ACTION_GET_PRINTER_INFO.equalsIgnoreCase(action)) {
+			callbackContext.success(this.mApi.getPrinterInfo());
+			return true;
+		} else if (ACTION_GET_PRINTER_STATE.equalsIgnoreCase(action)) {
+			callbackContext.success(this.mApi.getPrinterState());
 			return true;
 		} else if (ACTION_GET_ALL_PRINTER_ADDRESS.equalsIgnoreCase(action)) {
 			callbackContext.success(this.mApi.getAllPrinterAddresses(params));
@@ -86,10 +98,12 @@ public class LPAPIPlugin extends CordovaPlugin {
 				void success(JSONObject message) {
 					callbackContext.success(message);
 				}
+
 				@Override
 				void success(String message) {
 					callbackContext.success(message);
 				}
+
 				@Override
 				void fail(String message) {
 					callbackContext.error(message);
@@ -99,15 +113,17 @@ public class LPAPIPlugin extends CordovaPlugin {
 			}
 			return true;
 		} else if (ACTION_REOPEN_PRINTER.equalsIgnoreCase(action)) {
-			if(!this.mApi.reopenPrinter(new IResponse() {
+			if (!this.mApi.reopenPrinter(new IResponse() {
 				@Override
 				void success(JSONObject message) {
 					callbackContext.success(message);
 				}
+
 				@Override
 				void success(String message) {
 					callbackContext.success(message);
 				}
+
 				@Override
 				void fail(String message) {
 					callbackContext.error(message);
@@ -125,7 +141,7 @@ public class LPAPIPlugin extends CordovaPlugin {
 		} else if (ACTION_SET_HORIZONTAL_ALIGNMENT.equalsIgnoreCase(action)) {
 			if (this.mApi.setItemHorizontalAlignment(params))
 				callbackContext.success();
-			else 
+			else
 				callbackContext.error(LPAPIBridge.ERROR_PARAM_ERROR);
 			return true;
 		} else if (ACTION_GET_VERTICAL_ALIGNMENT.equalsIgnoreCase(action)) {
@@ -134,7 +150,7 @@ public class LPAPIPlugin extends CordovaPlugin {
 		} else if (ACTION_SET_VERTICAL_ALIGNMENT.equalsIgnoreCase(action)) {
 			if (this.mApi.setItemVerticalAlignment(params))
 				callbackContext.success();
-			else 
+			else
 				callbackContext.error(LPAPIBridge.ERROR_PARAM_ERROR);
 			return true;
 		} else if (ACTION_GET_ORIENTATION.equalsIgnoreCase(action)) {
@@ -143,7 +159,7 @@ public class LPAPIPlugin extends CordovaPlugin {
 		} else if (ACTION_SET_ORIENTATION.equalsIgnoreCase(action)) {
 			if (this.mApi.setItemOrientation(params))
 				callbackContext.success();
-			else 
+			else
 				callbackContext.error(LPAPIBridge.ERROR_PARAM_ERROR);
 			return true;
 		} else if (ACTION_GET_PEN_ALIGNMENT.equalsIgnoreCase(action)) {
@@ -152,7 +168,7 @@ public class LPAPIPlugin extends CordovaPlugin {
 		} else if (ACTION_SET_PEN_ALIGNMENT.equalsIgnoreCase(action)) {
 			if (this.mApi.setItemPenAlignment(params))
 				callbackContext.success();
-			else 
+			else
 				callbackContext.error(LPAPIBridge.ERROR_PARAM_ERROR);
 			return true;
 		}
@@ -175,6 +191,7 @@ public class LPAPIPlugin extends CordovaPlugin {
 				void success(String message) {
 					callbackContext.success(message);
 				}
+
 				@Override
 				void fail(String message) {
 					callbackContext.error(message);
@@ -194,6 +211,7 @@ public class LPAPIPlugin extends CordovaPlugin {
 				void success(String message) {
 					callbackContext.success(message);
 				}
+
 				@Override
 				void fail(String message) {
 					callbackContext.error(message);
