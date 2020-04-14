@@ -41,7 +41,7 @@
     <!-- 本地代码，有多个文件就写多个source-file，src对应本项目，target对应安装后的目录 -->
     <source-file src="src/android/LPAPIPlugin.java" target-dir="src/com/dothantech/lpapi/cordova"/>
     <source-file src="src/android/LPAPIBridge.java" target-dir="src/com/dothantech/lpapi/cordova"/>
-    <source-file src="src/android/LPAPI-2017-11-06-R.jar" target-dir="libs" />
+    <source-file src="src/android/LPAPI-2020-03-20-R.jar" target-dir="libs" />
   </platform>
 
   <!-- ios所有文件的存放地址 -->
